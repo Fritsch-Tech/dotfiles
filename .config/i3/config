@@ -10,6 +10,10 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
+#################
+#  i3 Defaults  #
+#################
+
 set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -164,7 +168,53 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Thinkpad keys
+##########################
+#  Startup Applications  #
+##########################
+
+exec_always feh --no-fehbg --bg-scale $(find "${HOME}/Pictures/Wallpapers/" -type f | sort -R | tail -1)
+exec_always chmod +x $HOME/.config/polybar/launch.sh
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+exec xcompmgr -c -n
+exec_always unclutter -idle 2.5 -root
+
+##########################
+#  i3-gaps Border Color  #
+##########################
+
+# class                 border  backgr. text    indic.  child_border
+
+client.focused          #2B83A6 #2B83A6 #FFFFFF #DDDDDD
+client.focused_inactive #212121 #212121 #86888C #292D2E
+client.unfocused        #212121 #212121 #86888C #292D2E
+client.urgent           #2F343A #D64E4E #FFFFFF #D64E4E
+client.placeholder      #212121 #0C0C0C #FFFFFF #212121
+client.background       #212121
+
+###########################
+#  i3-gaps Configuration  #
+###########################
+
+for_window [class="^.*"] border pixel 3
+smart_gaps on
+hide_edge_borders enable
+gaps inner 20
+gaps outer 0
+
+###########################
+#  i3-bar Configuration  #
+###########################
+
+#bar {
+#    height 34
+#    mode dock
+#    position bottom
+#    i3bar_command i3bar -t
+#}
+
+#####################
+#  Custom Keybinds  #
+#####################
 
 # Pulse Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
@@ -187,28 +237,3 @@ bindsym XF86AudioPrev exec playerctl previous
 
 # Lockscreen
 bindsym $mod + F2 exec betterlockscreen -l
-
-# Custom config
-
-for_window [class="^.*"] border pixel 0
-
-smart_gaps on
-
-hide_edge_borders enable
-
-gaps inner 50
-gaps outer 25
-
-exec --no-startup-id feh --bg-fill /home/sakuk/Bilder/Wallpapers
-
-exec --no-startup-id nitrogen --restore
-
-exec compton -b
-
-exec xcompmgr -c -n
-
-exec_always unclutter -idle 2.5 -root
-
-exec_always --no-startup-id polybar bottom
-
-exec redshift
