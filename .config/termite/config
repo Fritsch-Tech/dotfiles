@@ -2,7 +2,7 @@
 font = Fira Code 12
 
 [colors]
-background = rgba(0, 0, 0, 0.55)
+background = rgba(35, 39, 41, 0.95)
 foreground = rgba(255,255,255,1)
 # black
 color0  = #1b1d1e
