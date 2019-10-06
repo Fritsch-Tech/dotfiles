@@ -1,38 +1,55 @@
 [options]
+clickable_url = true
 font = Fira Code 12
+scrollback_lines = 10000
 
 [colors]
-background = rgba(35, 39, 41, 0.95)
-foreground = rgba(255,255,255,1)
-# black
-color0  = #1b1d1e
-color8  = #505354
+# Base16 Material Darker 
+# Author: Nate Peterson
 
-# red
-color1  = #f92672
-color9  = #ff5995
+foreground          = #eeffff
+foreground_bold     = #eeffff
+cursor              = #eeffff
+cursor_foreground   = #212121
+background          = rgba(18, 28, 33, 0.95)
+# 16 color space
 
-# green
-color2  = #82b414
-color10 = #b6e354
+# Black, Gray, Silver, White
+color0  = #212121
+color8  = #4a4a4a
+color7  = #eeffff
+color15 = #ffffff
 
-# yellow
-color3  = #fd971f
-color11 = #feed6c
+# Red
+color1  = #3E4970
+color9  = #3E4970
 
-# blue
-color4  = #4e82aa
-color12 = #0c73c2
+# Green
+color2  = #F0696F
+color10 = #F0696F
 
-# magenta
-color5  = #8c54fe
-color13 = #9e6ffe
+# Yellow
+color3  = #ffcb6b
+color11 = #ffcb6b
 
-# cyan
-color6  = #465457
-color14 = #899ca1
+# Blue
+color4  = #82aaff
+color12 = #82aaff
 
-# white
-color7  = #ccccc6
+# Purple
+color5  = #c792ea
+color13 = #c792ea
+
+# Teal
+color6  = #89ddff
+color14 = #89ddff
+
+# Extra colors
+color16 = #f78c6c
+color17 = #212121
+color18 = #303030
+color19 = #353535
+color20 = #b2ccd6
+color21 = #eeffff
 color15 = #f8f8f2
 

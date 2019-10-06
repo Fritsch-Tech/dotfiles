@@ -169,16 +169,6 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 ##########################
-#  Startup Applications  #
-##########################
-
-exec_always feh --no-fehbg --bg-scale $(find "${HOME}/Pictures/Wallpapers/" -type f | sort -R | tail -1)
-exec_always chmod +x $HOME/.config/polybar/launch.sh
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec xcompmgr -c -n
-exec_always unclutter -idle 2.5 -root
-
-##########################
 #  i3-gaps Border Color  #
 ##########################
 
@@ -211,6 +201,16 @@ gaps outer 0
 #    position bottom
 #    i3bar_command i3bar -t
 #}
+
+##########################
+#  Startup Applications  #
+##########################
+
+set $WALLPAPERPATH = $(find "${HOME}/Pictures/Wallpapers/" -type f | sort -R | tail -1)
+exec_always feh --no-fehbg --bg-scale $WALLPAPERPATH
+exec_always wal -i $WALLPAPERPATH
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+exec --no-startup-id compton --config .config/compton/compton.conf
 
 #####################
 #  Custom Keybinds  #

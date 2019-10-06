@@ -1,0 +1,10 @@
+feh
+compton
+i3-gaps
+ranger
+dmenu
+termite
+zsh
+firefox
+lsd
+code

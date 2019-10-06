@@ -8,7 +8,7 @@ while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
 # Launch bottom bar on all monitors
 for i in $(polybar -m | awk -F: '{print $1}');
-do MONITOR=$i polybar bottom & done
+do MONITOR=$i polybar top & done
 
 
 

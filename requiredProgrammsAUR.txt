@@ -1,0 +1,6 @@
+spotify 
+polybar
+ly-git
+ttf-fira-code
+python-pywal
+oh-my-zsh-git
