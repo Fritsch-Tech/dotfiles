@@ -8,3 +8,5 @@ zsh
 firefox
 lsd
 code
+gnome-keyring
+libsecret
