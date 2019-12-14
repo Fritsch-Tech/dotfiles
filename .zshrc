@@ -20,6 +20,11 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
+# set neovim as deafult editor
+export EDITOR=/usr/bin/nvim
+
+# create aliases
+alias vim="nvim"
 alias ls="lsd -lh"
 alias l="ls -l"
 alias la="ls -a"
