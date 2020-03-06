@@ -140,7 +140,7 @@ bindsym $mod+rmode  "resize"
 ##########################
 
 # Font
-set $wmfont pango:Noto Sans 9
+set $wmfont terminus:Monospaced
 
 # Colors
 set $color0x #073642

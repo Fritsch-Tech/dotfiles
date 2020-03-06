@@ -2,5 +2,5 @@ spotify
 polybar
 ly-git
 ttf-fira-code
-python-pywal
+terminus-font
 oh-my-zsh-git

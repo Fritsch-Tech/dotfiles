@@ -10,4 +10,3 @@ lsd
 code
 gnome-keyring
 libsecret
-neovim
