@@ -2,24 +2,25 @@
 
 # create symlinks
 
-ln -s -f $PWD/.xinitrc ~/.xinitrc
+ln -sfn $PWD/.xinitrc ~/.xinitrc
 
-ln -s -f $PWD/.zshrc ~/.zshrc
+ln -sfn $PWD/.zshrc ~/.zshrc
 
-ln -s -f $PWD/Wallpapers ~/Pictures/Wallpapers
+ln -sfn $PWD/Wallpapers ~/Pictures/Wallpapers
 
 # symlinks for .config file
 
 for dir in $PWD/config/*/
-do
-    ln -s -f $PWD/config/`basename "$dir"` ~/.config/`basename "$dir"`
+do  
+    bn=basename $dir
+    ln -s -f $dir ~/.config/$bn
 done
 
 
 
 # install requirements
-pacman -S --needed - < requiredProgramms.txt
-yay -S --noconfirm - < requiredProgrammsAUR.txt
+sudo pacman -S --needed - < requiredProgramms.txt
+sudo yay -S --noconfirm - < requiredProgrammsAUR.txt
 
 # create betterlockscreen image cach
 betterlockscreen -u ~/Pictures/Wallpapers/
@@ -29,6 +30,3 @@ chsh -s /usr/bin/zsh
 
 # make polybar launch file executable
 chmod +x ~/.config/polybar/launch.sh
-
-# install neovim plugins
-nvim +PlugInstall
