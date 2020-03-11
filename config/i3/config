@@ -197,7 +197,7 @@ set $WALLPAPERPATH = $(find "${HOME}/Pictures/Wallpapers/" -type f | sort -R | t
 exec_always feh --no-fehbg --bg-scale $WALLPAPERPATH
 exec_always wal -i $WALLPAPERPATH
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec --no-startup-id compton --config .config/compton/compton.conf
+exec --no-startup-id picom
 
 #####################
 #  Custom Keybinds  #

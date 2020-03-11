@@ -10,3 +10,4 @@ lsd
 code
 gnome-keyring
 libsecret
+picom
