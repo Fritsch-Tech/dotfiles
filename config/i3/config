@@ -1,3 +1,35 @@
+
+##########################
+#     Set Variables      #
+##########################
+
+# Font
+set $wmfont terminus
+
+# Colors
+set $color0x #073642
+set $color00 #002b36
+set $color01 #dc322f
+set $color02 #859900
+set $color03 #b58900
+set $color04 #268bd2
+set $color05 #d33682
+set $color06 #2aa198
+set $color07 #93a1a1
+set $color08 #586e75
+set $color09 #cb4b16
+set $color10 #85c000
+set $color11 #cccc00
+set $color12 #2c98e4
+set $color13 #6c71c4
+set $color14 #30b8b0
+set $color15 #eee8d5
+set $fground #fdf6e3
+set $bground #001014
+
+# Terminal
+set $terminal termite
+
 #################
 #  i3 Defaults  #
 #################
@@ -38,7 +70,7 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # split in horizontal orientation
-bindsym $mod+h split h
+bindsym $mod+b split h
 
 # split in vertical orientation
 bindsym $mod+v split v
@@ -132,39 +164,7 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 
-bindsym $mod+rmode  "resize"
-
-
-##########################
-#     Set Variables      #
-##########################
-
-# Font
-set $wmfont terminus:Monospaced
-
-# Colors
-set $color0x #073642
-set $color00 #002b36
-set $color01 #dc322f
-set $color02 #859900
-set $color03 #b58900
-set $color04 #268bd2
-set $color05 #d33682
-set $color06 #2aa198
-set $color07 #93a1a1
-set $color08 #586e75
-set $color09 #cb4b16
-set $color10 #85c000
-set $color11 #cccc00
-set $color12 #2c98e4
-set $color13 #6c71c4
-set $color14 #30b8b0
-set $color15 #eee8d5
-set $fground #fdf6e3
-set $bground #001014
-
-# Terminal
-set $terminal termite
+bindsym $mod+r "resize"
 
 ##########################
 #  Appearance of Windows #
@@ -186,7 +186,7 @@ font $wmfont
 for_window [class="^.*"] border pixel 3
 smart_gaps on
 hide_edge_borders enable
-gaps inner 20
+gaps inner 0
 gaps outer 0
 
 ##########################

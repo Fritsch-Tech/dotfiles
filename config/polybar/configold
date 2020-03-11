@@ -3,14 +3,9 @@
 bg = #141C21
 fg = #D9DBDF
 
-alpha = #00000000
+alpha = #515151aa
 
-shade1 = #AFB42B
-shade2 = #C0CA33
-shade3 = #CDDC39
-shade4 = #D4E157
-shade5 = #DCE775
-shade6 = #E6EE9C
+text = #000000
 
 [bar/bottom]
 monitor = ${env:MONITOR:}
@@ -21,7 +16,7 @@ height = 32
 background = ${color.alpha}
 foreground = ${color.fg}
 
-line-color = ${color.shade2}
+line-color = ${color.text}
 line-size = 16
 
 spacing = 2
@@ -48,7 +43,7 @@ time-alt = %Y-%m-%d%
 
 format = <label>
 format-background = ${color.alpha}
-format-foreground = ${color.shade1}
+format-foreground = ${color.text}
 format-padding = 2
 
 label = %time%

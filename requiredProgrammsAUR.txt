@@ -4,3 +4,5 @@ ly-git
 ttf-fira-code
 terminus-font
 oh-my-zsh-git
+siji-git
+scientifica-bdf
