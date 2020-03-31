@@ -1,5 +1,4 @@
 feh
-compton
 i3-gaps
 ranger
 dmenu

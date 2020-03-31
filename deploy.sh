@@ -1,32 +1,56 @@
 #!/bin/sh
 
+# replace line endings with a space (for use in package managers)
+function fileToList {
+    echo $(cat $1 | sed ':a;N;$!ba;s/\n/ /g')
+}
+
+# install yay, a aur helper
+function install_yay {
+    git clone https://aur.archlinux.org/yay.git
+    pushd yay
+    makepkg -si
+    popd
+    sudo rm -dRf yay/
+}
+
 # create symlinks
 
 ln -sfn $PWD/.xinitrc ~/.xinitrc
-
 ln -sfn $PWD/.zshrc ~/.zshrc
-
 ln -sfn $PWD/Wallpapers ~/Pictures/Wallpapers
 
 # symlinks for .config file
 
-for dir in $PWD/config/*/
-do  
-    bn=basename $dir
-    ln -s -f $dir ~/.config/$bn
+for dir in $PWD/config/*/; do  
+    ln -sfn $dir ~/.config
 done
 
+# create mirrorlist
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+sudo curl "https://www.archlinux.org/mirrorlist/?country=AT&protocol=http&protocol=https&ip_version=4" --output /etc/pacman.d/mirrorlist
+sudo sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist
+sudo rankmirrors -n 6 /etc/pacman.d/mirrorlist > /etc/pacman.d/mirrorlist
 
+sudo pacman -Syu --noconfirm
+yay -Syu --noconfirm
 
 # install requirements
-sudo pacman -S --needed - < requiredProgramms.txt
-sudo yay -S --noconfirm - < requiredProgrammsAUR.txt
+fileToList dependencies/pacman.txt | sudo pacman --noconfirm -S 
 
-# create betterlockscreen image cach
+yay || install_yay || exit 1 
+fileToList dependencies/aur.txt | yay -S --noconfirm 
+
+# create betterlockscreen image cache
 betterlockscreen -u ~/Pictures/Wallpapers/
+
+# enable betterlockscreen on suspend
+sudo systemctl enable betterlockscreen@$USER
 
 #change shell to zsh
 chsh -s /usr/bin/zsh
 
 # make polybar launch file executable
 chmod +x ~/.config/polybar/launch.sh
+
+exit 0

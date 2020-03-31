@@ -3,9 +3,13 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/panchi/.oh-my-zsh
+export ZSH=/usr/share/oh-my-zsh/
 
 ZSH_THEME="agnoster"
+
+DISABLE_AUTO_UPDATE="true"
+plugins=(git)
+
 
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
@@ -26,9 +30,12 @@ export EDITOR=/usr/bin/nvim
 # create aliases
 alias vim="nvim"
 alias ls="lsd -lh"
-alias l="ls -l"
-alias la="ls -a"
-alias lla="ls -la"
-alias lt="ls --tree"
 alias syu="sudo pacman -Syu ; sudo abs > /dev/null ; cower -ddfu"
 alias please="sudo $(history -p !!)"
+
+ZSH_CACHE_DIR=$HOME/.cache/oh-my-zsh
+if [[ ! -d $ZSH_CACHE_DIR ]]; then
+  mkdir $ZSH_CACHE_DIR
+fi
+
+source $ZSH/oh-my-zsh.sh
