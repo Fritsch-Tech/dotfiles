@@ -20,6 +20,9 @@ ln -sfn $PWD/.xinitrc ~/.xinitrc
 ln -sfn $PWD/.zshrc ~/.zshrc
 ln -sfn $PWD/Wallpapers ~/Pictures/Wallpapers
 
+# make xinitrc launch file executable
+chmod +x $PWD/.xinitrc
+
 # symlinks for .config dirs
 for dir in $PWD/config/*/; do  
     ln -sfn $dir ~/.config
