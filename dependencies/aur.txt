@@ -6,3 +6,5 @@ terminus-font
 oh-my-zsh-git
 siji-git
 scientifica-bdf
+roficlip
+clipster
