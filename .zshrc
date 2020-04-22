@@ -31,7 +31,7 @@ export EDITOR=/usr/bin/nvim
 alias vim="nvim"
 alias ls="lsd -lh"
 alias syu="sudo pacman -Syu ; sudo abs > /dev/null ; cower -ddfu"
-alias please="sudo $(history -p !!)"
+alias please="sudo !!"
 
 ZSH_CACHE_DIR=$HOME/.cache/oh-my-zsh
 if [[ ! -d $ZSH_CACHE_DIR ]]; then

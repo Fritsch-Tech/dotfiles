@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # replace line endings with a space (for use in package managers)
 function fileToList {
@@ -20,8 +20,7 @@ ln -sfn $PWD/.xinitrc ~/.xinitrc
 ln -sfn $PWD/.zshrc ~/.zshrc
 ln -sfn $PWD/Wallpapers ~/Pictures/Wallpapers
 
-# symlinks for .config file
-
+# symlinks for .config dirs
 for dir in $PWD/config/*/; do  
     ln -sfn $dir ~/.config
 done
@@ -40,6 +39,9 @@ fileToList dependencies/pacman.txt | sudo pacman --noconfirm -S
 
 yay || install_yay || exit 1 
 fileToList dependencies/aur.txt | yay -S --noconfirm 
+
+# Enable ly login manager
+sudo systemctl enable ly.service
 
 # create betterlockscreen image cache
 betterlockscreen -u ~/Pictures/Wallpapers/
