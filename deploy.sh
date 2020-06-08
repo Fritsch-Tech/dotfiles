@@ -35,6 +35,11 @@ sudo curl "https://www.archlinux.org/mirrorlist/?country=AT&protocol=http&protoc
 sudo sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist
 sudo rankmirrors -n 6 /etc/pacman.d/mirrorlist > /etc/pacman.d/mirrorlist
 
+# enable Multilib
+#/etc/pacman.conf
+#[multilib]
+#Include = /etc/pacman.d/mirrorlist
+
 sudo pacman -Syu --noconfirm
 yay -Syu --noconfirm
 
