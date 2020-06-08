@@ -17,6 +17,7 @@ function install_yay {
 # create symlinks
 
 ln -sfn $PWD/.xinitrc ~/.xinitrc
+ln -sfn $PWD/.xprofil ~/.xprofil
 ln -sfn $PWD/.zshrc ~/.zshrc
 ln -sfn $PWD/Wallpapers ~/Pictures/Wallpapers
 
@@ -39,6 +40,8 @@ yay -Syu --noconfirm
 
 # install requirements
 fileToList dependencies/pacman.txt | sudo pacman --noconfirm -S 
+
+vscode/setup.sh
 
 yay || install_yay || exit 1 
 fileToList dependencies/aur.txt | yay -S --noconfirm 

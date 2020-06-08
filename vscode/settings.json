@@ -1,0 +1,10 @@
+{
+    "workbench.iconTheme": "vscode-icons",
+    "editor.fontFamily": "'Fira Code'",
+    "terminal.integrated.fontLigatures": true,
+    "editor.fontLigatures": true,
+    "editor.fontSize": 18,
+    "git.autofetch": true,
+    "workbench.startupEditor": "newUntitledFile",
+    "git.confirmSync": false
+}
