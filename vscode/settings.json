@@ -1,6 +1,6 @@
 {
     "workbench.iconTheme": "vscode-icons",
-    "editor.fontFamily": "'Fira Code'",
+    "editor.fontFamily": "'Fira Code','monospace','NotoFontsEmoji'",
     "terminal.integrated.fontLigatures": true,
     "editor.fontLigatures": true,
     "editor.fontSize": 18,

@@ -10,3 +10,4 @@ code
 gnome-keyring
 libsecret
 picom
+xclip

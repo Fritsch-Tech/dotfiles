@@ -44,12 +44,17 @@ sudo pacman -Syu --noconfirm
 yay -Syu --noconfirm
 
 # install requirements
-fileToList dependencies/pacman.txt | sudo pacman --noconfirm -S 
+dep=$(fileToList dependencies/pacman.txt)
+echo $dep
+sudo pacman --noconfirm -S 
 
 vscode/setup.sh
 
 yay || install_yay || exit 1 
-fileToList dependencies/aur.txt | yay -S --noconfirm 
+
+aurDep=$(fileToList dependencies/aur.txt)
+echo $aurDep
+yay -S $aurDep --noconfirm 
 
 # Enable ly login manager
 sudo systemctl enable ly.service
