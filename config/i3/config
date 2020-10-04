@@ -198,10 +198,14 @@ exec_always feh --no-fehbg --bg-scale $WALLPAPERPATH
 exec_always wal -i $WALLPAPERPATH
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id picom
+exec_always --no-startup-id clipmenud
 
 #####################
 #  Custom Keybinds  #
 #####################
+
+# clipbord manager
+bindsym $mod+c exec clipmenu
 
 # start a terminal
 bindsym $mod+Return exec $terminal

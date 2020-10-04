@@ -39,3 +39,4 @@ if [[ ! -d $ZSH_CACHE_DIR ]]; then
 fi
 
 source $ZSH/oh-my-zsh.sh
+source /home/sakuk/.config/broot/launcher/bash/br

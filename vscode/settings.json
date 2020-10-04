@@ -6,5 +6,8 @@
     "editor.fontSize": 18,
     "git.autofetch": true,
     "workbench.startupEditor": "newUntitledFile",
-    "git.confirmSync": false
+    "git.confirmSync": false,
+    "explorer.confirmDragAndDrop": false,
+    "window.zoomLevel": 0,
+    "explorer.confirmDelete": false
 }
