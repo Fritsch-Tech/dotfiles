@@ -1,4 +1,18 @@
 Python
-vscode-icons
 Python Indent
-colorize
+bierner.markdown-preview-github-styles
+byCedric.vscode-expo
+christian-kohler.npm-intellisense
+christian-kohler.path-intellisense
+CoenraadS.bracket-pair-colorizer-2
+dbaeumer.vscode-eslint
+divyanshu013.vscode-material-darker
+GitHub.copilot
+kuscamara.remove-unused-imports
+mgmcdermott.vscode-language-babel
+msjsdiag.vscode-react-native
+naumovs.color-highlight
+PKief.material-icon-theme
+planbcoding.vscode-react-refactor
+WallabyJs.quokka-vscode
+

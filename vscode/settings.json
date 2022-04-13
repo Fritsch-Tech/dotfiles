@@ -1,13 +1,16 @@
 {
-    "workbench.iconTheme": "vscode-icons",
-    "editor.fontFamily": "'Fira Code','monospace','NotoFontsEmoji'",
-    "terminal.integrated.fontLigatures": true,
-    "editor.fontLigatures": true,
-    "editor.fontSize": 18,
+    "workbench.colorTheme": "Material Darker",
+    "editor.inlineSuggest.enabled": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "editor.formatOnPaste": true,
+    "bracket-pair-colorizer-2.depreciation-notice": false,
     "git.autofetch": true,
-    "workbench.startupEditor": "newUntitledFile",
     "git.confirmSync": false,
-    "explorer.confirmDragAndDrop": false,
-    "window.zoomLevel": 0,
-    "explorer.confirmDelete": false
+    "workbench.startupEditor": "none",
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.formatOnSave": true,
+    "terminal.integrated.fontFamily": "Hack Nerd Font",
+    "editor.fontFamily": "'Fira Code','Hack Nerd Font'",
+    "editor.fontLigatures": true,
+    "workbench.iconTheme": "material-icon-theme"
 }

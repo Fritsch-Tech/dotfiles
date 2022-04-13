@@ -199,7 +199,7 @@ exec_always wal -i $WALLPAPERPATH
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id picom
 exec_always --no-startup-id clipmenud
-
+exec setxkbmap de
 #####################
 #  Custom Keybinds  #
 #####################
