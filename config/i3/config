@@ -27,8 +27,6 @@ set $color15 #eee8d5
 set $fground #fdf6e3
 set $bground #001014
 
-# Terminal
-set $terminal termite
 
 #################
 #  i3 Defaults  #
@@ -199,11 +197,13 @@ exec_always wal -i $WALLPAPERPATH
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id picom
 exec_always --no-startup-id clipmenud
-exec setxkbmap de
+exec --no-startup-id setxkbmap de
+exec_always --no-startup-id "sleep 1; setxkbmap de"
+exec_always --no-startup-id "sleep 1; setxkbmap -option caps:escape"
+exec --no-startup-id dockd --daemon
 
-exec setxkbmap -option caps:escape
 # disable trackpad
-exec xinput set-prop "SynPS/2 Synaptics TouchPad" "Device Enabled" 0
+# exec xinput set-prop "SynPS/2 Synaptics TouchPad" "Device Enabled" 0
 
 # set trackpoint options
 exec echo 190 | sudo tee /sys/devices/platform/i8042/serio1/serio2/sensitivity
@@ -218,15 +218,15 @@ exec echo 100 | sudo tee /sys/devices/platform/i8042/serio1/serio2/speed
 bindsym $mod+c exec clipmenu
 
 # start a terminal
-bindsym $mod+Return exec $terminal
+bindsym $mod+Return exec kitty
 
 # Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% #decrease sound volume
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
+bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 5%+
+bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 5%-
+bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master 1+ toggle
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
+bindsym XF86MonBrightnessUp exec # increase screen brightness
 bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightness
 
 

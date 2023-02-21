@@ -7,4 +7,6 @@ oh-my-zsh-git
 siji-git
 scientifica-bdf
 roficlip
-
+dockd
+visual-studio-code-bin
+mailspring
