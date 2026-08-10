@@ -1,48 +1,81 @@
 #!/bin/bash
 
+set -Eeuo pipefail
+trap 'echo "Error on line $LINENO: $BASH_COMMAND" >&2' ERR
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_DIR="$HOME/.config"
+
 # replace line endings with a space (for use in package managers)
 function fileToList {
   echo $(cat $1 | sed ':a;N;$!ba;s/\n/ /g')
 }
 
-# install yay, a aur helper
-function install_yay {
-  git clone https://aur.archlinux.org/yay.git
-  pushd yay
-  makepkg -si
-  popd
-  sudo rm -dRf yay/
+enable_multilib() {
+  local pacman_conf="/etc/pacman.conf"
+
+  if grep -qE '^\[multilib\]' "$pacman_conf"; then
+    echo "Multilib is already enabled."
+    return 0
+  fi
+
+  if ! grep -qE '^#\[multilib\]' "$pacman_conf"; then
+    echo "Could not find the commented multilib section in $pacman_conf" >&2
+    return 1
+  fi
+
+  sudo sed -i \
+    -e 's/^#\[multilib\]/[multilib]/' \
+    -e 's/^#Include = \/etc\/pacman\.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/' \
+    "$pacman_conf"
+
+  echo "Multilib enabled."
+}
+
+install_yay() {
+  sudo pacman -S --needed --noconfirm git base-devel
+  local tmpdir
+  tmpdir=$(mktemp -d)
+
+  git clone https://aur.archlinux.org/yay.git "$tmpdir/yay"
+  (
+    cd "$tmpdir/yay" &&
+      makepkg -si --noconfirm
+  )
+
+  rm -rf "$tmpdir"
 }
 
 # create symlinks
 
-ln -sfn $PWD/.zshrc ~/.zshrc
+ln -sfn $SCRIPT_DIR/.zshrc ~/.zshrc
 
+mkdir -p ~/.config
 # symlinks for .config dirs
-for dir in $PWD/config/*/; do
-  ln -sfn $dir ~/.config
+for dir in "$SCRIPT_DIR"/config/*/; do
+  ln -sfn "$dir" "$CONFIG_DIR/$(basename "$dir")"
 done
 
 # create mirrorlist
-sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-sudo curl "https://www.archlinux.org/mirrorlist/?country=AT&protocol=http&protocol=https&ip_version=4" --output /etc/pacman.d/mirrorlist
-sudo sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist
-sudo rankmirrors -n 6 /etc/pacman.d/mirrorlist >/etc/pacman.d/mirrorlist
+sudo pacman -S reflector
+sudo systemctl enable reflector.service
+sudo systemctl start reflector.service
 
 # enable Multilib
-#/etc/pacman.conf
-#[multilib]
-#Include = /etc/pacman.d/mirrorlist
+enable_multilib
 
 sudo pacman -Syu --noconfirm
-yay -Syu --noconfirm
 
 # install requirements
 dep=$(fileToList dependencies/pacman.txt)
 echo $dep
 sudo pacman --noconfirm -S $dep
 
-yay || install_yay || exit 1
+if ! command -v yay >/dev/null 2>&1; then
+  install_yay
+fi
+
+yay -Syu --noconfirm
 
 aurDep=$(fileToList dependencies/aur.txt)
 echo $aurDep
@@ -52,9 +85,13 @@ yay -S $aurDep --noconfirm
 sudo systemctl enable ly.service
 
 #change shell to zsh
-chsh -s /usr/bin/zsh
+if command -v zsh >/dev/null 2>&1; then
+  chsh -s "$(command -v zsh)"
+fi
 
 # make waybar launch file executable
-chmod +x ~/.config/waybar/waybar.sh
+if [[ -f "$CONFIG_DIR/waybar/waybar.sh" ]]; then
+  chmod +x "$CONFIG_DIR/waybar/waybar.sh"
+fi
 
 exit 0
