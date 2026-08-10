@@ -13,8 +13,8 @@ swayidle
 swaylock
 grim
 slurp
-clipmenu
 swaync
 btop
 lazygit
 lazydocker
+clipcat
