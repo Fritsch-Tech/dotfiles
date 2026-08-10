@@ -149,19 +149,45 @@ install_packages() {
 create_config_symlinks() {
   local config_dir
   local config_name
+  local target
+  local backup
 
   info "Creating configuration symlinks"
 
   mkdir -p "$CONFIG_DIR"
 
-  ln -sfnT "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+  # Handle .zshrc
+  if [[ -L "$HOME/.zshrc" ]] && [[ "$(readlink "$HOME/.zshrc")" == "$SCRIPT_DIR/.zshrc" ]]; then
+    info "Already linked .zshrc"
+  else
+    if [[ -e "$HOME/.zshrc" || -L "$HOME/.zshrc" ]]; then
+      backup="$HOME/.zshrc.backup.$(date +%Y%m%d%H%M%S%N)"
+      mv "$HOME/.zshrc" "$backup"
+      info "Backed up .zshrc to $backup"
+    fi
+
+    ln -s "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+    info "Linked .zshrc"
+  fi
 
   shopt -s nullglob
 
   for config_dir in "$SCRIPT_DIR"/config/*/; do
     config_name="$(basename "$config_dir")"
+    target="$CONFIG_DIR/$config_name"
 
-    ln -sfnT "$config_dir" "$CONFIG_DIR/$config_name"
+    if [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$config_dir" ]]; then
+      info "Already linked $config_name"
+      continue
+    fi
+
+    if [[ -e "$target" || -L "$target" ]]; then
+      backup="$target.backup.$(date +%Y%m%d%H%M%S%N)"
+      mv "$target" "$backup"
+      info "Backed up $config_name to $backup"
+    fi
+
+    ln -s "$config_dir" "$target"
     info "Linked $config_name"
   done
 
