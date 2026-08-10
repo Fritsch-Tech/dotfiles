@@ -23,25 +23,37 @@ vim.keymap.set("n", "<leader>mm", function()
   end
 
   local function slugify(s)
-    if not s then return "" end
-    s = s:gsub("Ä","Ae"):gsub("ä","ae"):gsub("Ö","Oe"):gsub("ö","oe"):gsub("Ü","Ue"):gsub("ü","ue"):gsub("ß","sz")
+    if not s then
+      return ""
+    end
+    s = s:gsub("Ä", "Ae")
+      :gsub("ä", "ae")
+      :gsub("Ö", "Oe")
+      :gsub("ö", "oe")
+      :gsub("Ü", "Ue")
+      :gsub("ü", "ue")
+      :gsub("ß", "sz")
     s = s:lower()
     -- replace non-alphanumeric with hyphen
-    s = s:gsub("[^%w]+","-")
+    s = s:gsub("[^%w]+", "-")
     -- replace underscores with hyphen
-    s = s:gsub("_","-")
+    s = s:gsub("_", "-")
     -- collapse multiple hyphens
-    s = s:gsub("%-+","-")
+    s = s:gsub("%-+", "-")
     -- trim
-    s = s:gsub("^%-+",""):gsub("%-+$","")
+    s = s:gsub("^%-+", ""):gsub("%-+$", "")
     return s
   end
 
   vim.ui.input({ prompt = "Name (used for filename): " }, function(name)
-    if not name or name == "" then return end
+    if not name or name == "" then
+      return
+    end
 
     vim.ui.input({ prompt = "Location (folder or path): ", default = default_path }, function(input)
-      if not input or input == "" then return end
+      if not input or input == "" then
+        return
+      end
 
       local path = input
 
@@ -80,3 +92,5 @@ vim.keymap.set("n", "<leader>md", function()
 
   vim.cmd("edit " .. path)
 end, { desc = "Generate daily note" })
+
+vim.keymap.set("i", "jj", "<ESC>", { silent = true })
