@@ -57,9 +57,8 @@ for dir in "$SCRIPT_DIR"/config/*/; do
 done
 
 # create mirrorlist
-sudo pacman -S reflector
+sudo pacman -S reflector --noconfirm
 sudo systemctl enable reflector.service
-sudo systemctl start reflector.service
 
 # enable Multilib
 enable_multilib
