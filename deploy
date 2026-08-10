@@ -80,9 +80,6 @@ aurDep=$(fileToList dependencies/aur.txt)
 echo $aurDep
 yay -S $aurDep --noconfirm
 
-# Enable ly login manager
-sudo systemctl enable ly.service
-
 #change shell to zsh
 if command -v zsh >/dev/null 2>&1; then
   chsh -s "$(command -v zsh)"
