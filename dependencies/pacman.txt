@@ -19,3 +19,4 @@ lazygit
 lazydocker
 clipcat
 reflector
+ly
