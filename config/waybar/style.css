@@ -1,0 +1,79 @@
+@import 'mocha.css';
+
+* {
+  border: none;
+  border-radius: 0;
+  font-family: Sans;
+  font-size: 15px;
+  box-shadow: none;
+  text-shadow: none;
+  transition-duration: 0s;
+}
+
+window#waybar {
+  background: @crust;
+  border-top: 3px solid @mantle;
+  color: @text;
+}
+
+#workspaces {
+  margin: 0 5px;
+}
+
+#workspaces button {
+  padding: 0 5px;
+  color: @subtext0;
+}
+
+#workspaces button.visible {
+  color: @text;
+}
+
+#workspaces button.focused {
+  border-top: 3px solid @mauve;
+  border-bottom: 3px solid rgba(217, 216, 216, 0);
+}
+
+#workspaces button.urgent {
+  color: @red;
+}
+
+#mode,
+#battery,
+#cpu,
+#memory,
+#network,
+#pulseaudio,
+#idle_inhibitor,
+#backlight,
+#custom-storage,
+#custom-spotify,
+#custom-weather,
+#custom-mail {
+  margin: 0px 6px 0px 10px;
+  min-width: 25px;
+}
+
+#clock {
+  margin: 0px 16px 0px 10px;
+}
+
+#battery.warning {
+  color: @yellow;
+}
+
+#battery.critical {
+  color: @red;
+}
+
+#battery.charging {
+  color: rgba(217, 216, 216, 1);
+}
+
+#custom-storage.warning {
+  color: @yellow;
+}
+
+#custom-storage.critical {
+  color: @red;
+}

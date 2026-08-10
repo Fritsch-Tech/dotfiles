@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  echo "Usage: $0 [--title \"TITLE\"] <relative/path/to/file.md>"
+  echo "       $0 [--title \"TITLE\"] --daily"
+  echo
+  echo "Creates a new note from template.md."
+  echo "--daily creates daily/YYYY-MM-DD.md"
+  echo "--title specifies the human-readable title to insert into the template (verbatim)."
+}
+
+if [ $# -eq 0 ]; then
+  usage
+  exit 1
+fi
+
+TARGET_FILE=""
+TITLE_OVERRIDE=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --help | -h)
+    usage
+    exit 0
+    ;;
+  --daily)
+    TARGET_FILE="daily/$(date +%F).md"
+    ;;
+  --title)
+    shift
+    if [ $# -eq 0 ]; then
+      echo "Error: --title requires an argument"
+      usage
+      exit 1
+    fi
+    TITLE_OVERRIDE="$1"
+    ;;
+  -*)
+    echo "Error: Unknown option: $1"
+    usage
+    exit 1
+    ;;
+  *)
+    if [ -n "$TARGET_FILE" ]; then
+      echo "Error: Multiple target paths provided"
+      usage
+      exit 1
+    fi
+    TARGET_FILE="$1"
+    ;;
+  esac
+  shift
+done
+
+if [ -z "$TARGET_FILE" ]; then
+  echo "Error: Missing target path"
+  usage
+  exit 1
+fi
+
+if [[ "$TARGET_FILE" != *.md ]]; then
+  echo "Error: Target file must end with .md"
+  exit 1
+fi
+
+if [ -e "$TARGET_FILE" ]; then
+  echo "Error: File already exists: $TARGET_FILE"
+  exit 1
+fi
+
+TEMPLATE_FILE="./template.md"
+
+if [ ! -f "$TEMPLATE_FILE" ]; then
+  echo "Error: template.md not found in current directory"
+  exit 1
+fi
+
+# Create parent directories if needed
+mkdir -p "$(dirname "$TARGET_FILE")"
+
+# Extract filename without extension
+FILENAME="$(basename "$TARGET_FILE" .md)"
+
+# Determine title: either provided explicitly or derived from filename
+if [ -n "$TITLE_OVERRIDE" ]; then
+  TITLE="$TITLE_OVERRIDE"
+else
+  TITLE="$FILENAME"
+
+  # Replace separators with spaces
+  TITLE="${TITLE//-/ }"
+  TITLE="${TITLE//_/ }"
+
+  # Insert spaces before camel case capitals
+  TITLE="$(echo "$TITLE" | sed -E 's/([a-z])([A-Z])/\1 \2/g')"
+
+  # Collapse multiple spaces
+  TITLE="$(echo "$TITLE" | tr -s ' ')"
+fi
+
+# Generate kebab-case lowercase slug (with German umlaut handling)
+SLUG_SOURCE="$TITLE"
+SLUG_SOURCE="$(echo "$SLUG_SOURCE" | sed -E 's/Ä/Ae/g; s/ä/ae/g; s/Ö/Oe/g; s/ö/oe/g; s/Ü/Ue/g; s/ü/ue/g; s/ß/sz/g')"
+TITLE_SLUG="$(echo "$SLUG_SOURCE" |
+  tr '[:upper:]' '[:lower:]' |
+  sed -E 's/[^a-z0-9]+/-/g' |
+  sed -E 's/^-+|-+$//g')"
+
+# Current date
+CREATION_DATE="$(date +%F)"
+
+# Replace placeholders in template
+CONTENT="$(cat "$TEMPLATE_FILE")"
+CONTENT="${CONTENT//\{ title \}/$TITLE}"
+CONTENT="${CONTENT//\{title\}/$TITLE}"
+CONTENT="${CONTENT//\{ titleSlug \}/$TITLE_SLUG}"
+CONTENT="${CONTENT//\{titleSlug\}/$TITLE_SLUG}"
+CONTENT="${CONTENT//\{ creationDate \}/$CREATION_DATE}"
+CONTENT="${CONTENT//\{creationDate\}/$CREATION_DATE}"
+
+# Write file
+echo "$CONTENT" >"$TARGET_FILE"
+
+echo "Created: $TARGET_FILE"

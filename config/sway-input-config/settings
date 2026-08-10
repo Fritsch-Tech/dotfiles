@@ -1,0 +1,52 @@
+{
+  "keyboard-use-settings": "false",
+  "keyboard-layout": [
+    "at"
+  ],
+  "keyboard-variant": [
+    "nodeadkeys"
+  ],
+  "keyboard-shortcut": "",
+  "keyboard-identifier": "1:1:AT_Translated_Set_2_keyboard",
+  "keyboard-model": "pc105",
+  "keyboard-repeat-delay": 300,
+  "keyboard-repeat-rate": 40,
+  "keyboard-capslock": "disabled",
+  "keyboard-numlock": "disabled",
+  "pointer-use-settings": false,
+  "pointer-identifier": "",
+  "pointer-accel-profile": "flat",
+  "pointer-pointer-accel": -1.0,
+  "pointer-natural-scroll": "disabled",
+  "pointer-scroll-factor": 1.0,
+  "pointer-left-handed": "disabled",
+  "pointer-middle-emulation": "disabled",
+  "touchpad-use-settings": false,
+  "touchpad-identifier": "",
+  "touchpad-accel-profile": "flat",
+  "touchpad-pointer-accel": 0.0,
+  "touchpad-natural-scroll": "disabled",
+  "touchpad-scroll-factor": 1.0,
+  "touchpad-scroll-method": "two_finger",
+  "touchpad-left-handed": "disabled",
+  "touchpad-tap": "enabled",
+  "touchpad-tap-button-map": "lrm",
+  "touchpad-drag": "enabled",
+  "touchpad-drag-lock": "disabled",
+  "touchpad-dwt": "enabled",
+  "touchpad-dwtp": "disabled",
+  "touchpad-events": "enabled",
+  "touchpad-click-method": "button_areas",
+  "touchpad-middle-emulation": "enabled",
+  "pointer-rotation-angle": "0.0",
+  "pointer-scroll-button": "BTN_MIDDLE",
+  "pointer-scroll-button-lock": "disabled",
+  "touchpad-rotation-angle": "0.0",
+  "tablet-use-settings": "false",
+  "tablet-identifier": "",
+  "tablet-tool-mode": [
+    "*",
+    "absolute"
+  ],
+  "tablet-left-handed": "disabled"
+}

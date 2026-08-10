@@ -1,0 +1,181 @@
+{
+  "layer": "bottom",
+  "position": "bottom",
+  "height": 30,
+  "modules-left": [
+    "sway/workspaces",
+    "sway/window"
+  ],
+  "modules-right": [
+    "tray",
+    "custom/spotify",
+    "custom/storage",
+    "backlight",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "idle_inhibitor",
+    "battery",
+    "clock",
+    "custom/weather"
+  ],
+  "sway/workspaces": {
+    "format": "{name}",
+    "disable-scroll": true
+  },
+  "sway/window": {
+    "max-length": 40,
+    "tooltip": false
+  },
+  "clock": {
+    "format": "{:%Y-%m-%d %H:%M}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "locale": "en_DK.UTF-8",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "on-click-right": "mode",
+      "format": {
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "days": "<span color='#ecc6d9'><b>{}</b></span>",
+        "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-icons": [
+      "󱟩",
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],
+    "format-charging": "{capacity}% 󰂄",
+    "interval": 30,
+    "states": {
+      "warning": 25,
+      "critical": 10
+    },
+    "tooltip": true,
+    "tooltip-format": "{time}"
+  },
+  "network": {
+    "format": "{icon}",
+    "format-alt": "{ipaddr}/{cidr} {icon}",
+    "format-alt-click": "click-right",
+    "format-icons": {
+      "wifi": [
+        "󰤯",
+        "󰤟",
+        "󰤢",
+        "󰤥",
+        "󰤨"
+      ],
+      "ethernet": [
+        "󰈀"
+      ],
+      "disconnected": [
+        "󰤭"
+      ]
+    },
+    "on-click": "foot nmtui",
+    "tooltip": true,
+    "tooltip-format": "{essid} {signalStrength}% {frequency}GHz\n {ipaddr}/{cidr}"
+  },
+  "bluetooth": {
+    "format": "󰂯",
+    "format-disabled": "󰂲",
+    "format-off": "󰂲",
+    "format-connected": "󰂰 {num_connections}",
+    "on-click": "foot bluetuith",
+    "tooltip": true,
+    "tooltip-format": "{controller_alias}\t{controller_address}",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%"
+  },
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-alt": "{volume} {icon}",
+    "format-alt-click": "click-right",
+    "format-muted": "󰖁",
+    "format-icons": {
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    },
+    "scroll-step": 10,
+    "on-click": "pavucontrol",
+    "tooltip": true,
+    "tooltip-format": "{volume}%"
+  },
+  "custom/spotify": {
+    "interval": 1,
+    "return-type": "json",
+    "exec": "~/.config/waybar/modules/spotify.sh",
+    "exec-if": "pgrep spotify",
+    "escape": true
+  },
+  "custom/storage": {
+    "format": "{} ",
+    "format-alt": "{percentage}% ",
+    "format-alt-click": "click-right",
+    "return-type": "json",
+    "interval": 60,
+    "exec": "~/.config/waybar/modules/storage.sh"
+  },
+  "backlight": {
+    "format": "{icon}",
+    "format-icons": [
+      "󱩎",
+      "󱩏",
+      "󱩐",
+      "󱩑",
+      "󱩒",
+      "󱩓",
+      "󱩔",
+      "󱩕",
+      "󱩖",
+      "󰛨"
+    ],
+    "on-scroll-down": "brightnessctl s 2%-",
+    "on-scroll-up": "brightnessctl s 2%-",
+    "tooltip": true,
+    "tooltip-format": "{percent}%"
+  },
+  "custom/weather": {
+    "format": "{} °",
+    "tooltip": true,
+    "interval": 3600,
+    "exec": "wttrbar",
+    "return-type": "json"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "󰍁",
+      "deactivated": "󰿇"
+    },
+    "tooltip": true,
+    "tooltip-format": "{icon} {status}"
+  }
+}

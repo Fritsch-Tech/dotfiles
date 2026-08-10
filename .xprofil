@@ -1,5 +1,0 @@
-#!/bin/sh
-
-setxkbmap de
-
-setxkbmap -option caps:escape
