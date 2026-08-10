@@ -1,93 +1,235 @@
 #!/bin/bash
 
 set -Eeuo pipefail
+
 trap 'echo "Error on line $LINENO: $BASH_COMMAND" >&2' ERR
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="$HOME/.config"
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly CONFIG_DIR="$HOME/.config"
+readonly PACMAN_CONF="/etc/pacman.conf"
 
-# replace line endings with a space (for use in package managers)
-function fileToList {
-  echo $(cat $1 | sed ':a;N;$!ba;s/\n/ /g')
+info() {
+  echo "==> $*"
+}
+
+error() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
+
+require_command() {
+  local command="$1"
+
+  if ! command -v "$command" >/dev/null 2>&1; then
+    error "Required command not found: $command"
+  fi
+}
+
+load_dependencies() {
+  local file="$1"
+  local -n deps="$2"
+
+  deps=()
+
+  [[ -f "$file" ]] || return 0
+
+  mapfile -t deps < <(
+    sed \
+      -e 's/#.*//' \
+      -e '/^[[:space:]]*$/d' \
+      -e 's/^[[:space:]]*//' \
+      -e 's/[[:space:]]*$//' \
+      "$file"
+  )
 }
 
 enable_multilib() {
-  local pacman_conf="/etc/pacman.conf"
+  info "Enabling multilib repository"
 
-  if grep -qE '^\[multilib\]' "$pacman_conf"; then
-    echo "Multilib is already enabled."
-    return 0
+  if grep -qE '^[[:space:]]*\[multilib\][[:space:]]*$' "$PACMAN_CONF"; then
+    info "Multilib is already enabled."
+    return
   fi
 
-  if ! grep -qE '^#\[multilib\]' "$pacman_conf"; then
-    echo "Could not find the commented multilib section in $pacman_conf" >&2
-    return 1
+  if ! grep -qE '^[[:space:]]*#\[multilib\][[:space:]]*$' "$PACMAN_CONF"; then
+    error "Could not find the commented multilib section in $PACMAN_CONF"
   fi
 
   sudo sed -i \
-    -e 's/^#\[multilib\]/[multilib]/' \
-    -e 's/^#Include = \/etc\/pacman\.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/' \
-    "$pacman_conf"
+    -e 's/^[[:space:]]*#\[multilib\][[:space:]]*$/[multilib]/' \
+    -e 's/^[[:space:]]*#Include = \/etc\/pacman\.d\/mirrorlist$/Include = \/etc\/pacman.d\/mirrorlist/' \
+    "$PACMAN_CONF"
 
-  echo "Multilib enabled."
+  info "Multilib enabled."
+}
+
+configure_reflector() {
+  info "Installing and enabling reflector"
+
+  sudo pacman -S --needed --noconfirm reflector
+  sudo systemctl enable --now reflector.service
+}
+
+update_system() {
+  info "Updating system packages"
+
+  sudo pacman -Syu --noconfirm
 }
 
 install_yay() {
-  sudo pacman -S --needed --noconfirm git base-devel
-  local tmpdir
-  tmpdir=$(mktemp -d)
+  info "Installing yay"
 
-  git clone https://aur.archlinux.org/yay.git "$tmpdir/yay"
+  sudo pacman -S --needed --noconfirm git base-devel
+
+  local build_dir
+  build_dir="$(mktemp -d)"
+  trap 'rm -rf "$build_dir"' EXIT
+
+  git clone https://aur.archlinux.org/yay.git "$build_dir/yay"
+
   (
-    cd "$tmpdir/yay" &&
-      makepkg -si --noconfirm
+    cd "$build_dir/yay"
+    makepkg -si --noconfirm
   )
 
-  rm -rf "$tmpdir"
+  rm -rf "$build_dir"
+
+  info "yay installed."
 }
 
-# create symlinks
+update_aur_helper() {
+  info "Updating AUR packages"
 
-ln -sfn $SCRIPT_DIR/.zshrc ~/.zshrc
+  yay -Syu --noconfirm
+}
 
-mkdir -p ~/.config
-# symlinks for .config dirs
-for dir in "$SCRIPT_DIR"/config/*/; do
-  ln -sfn "$dir" "$CONFIG_DIR/$(basename "$dir")"
-done
+install_pacman_dependencies() {
+  local dependency_file="$SCRIPT_DIR/dependencies/pacman.txt"
+  local dependencies=()
 
-# create mirrorlist
-sudo pacman -S reflector --noconfirm
-sudo systemctl enable reflector.service
+  info "Installing official repository packages"
 
-# enable Multilib
-enable_multilib
+  load_dependencies "$dependency_file" dependencies
 
-sudo pacman -Syu --noconfirm
+  if ((${#dependencies[@]} == 0)); then
+    info "No pacman dependencies to install."
+    return
+  fi
 
-# install requirements
-dep=$(fileToList dependencies/pacman.txt)
-echo $dep
-sudo pacman --noconfirm -S $dep
+  sudo pacman -S --needed --noconfirm "${dependencies[@]}"
+}
 
-if ! command -v yay >/dev/null 2>&1; then
-  install_yay
-fi
+install_aur_dependencies() {
+  local dependency_file="$SCRIPT_DIR/dependencies/aur.txt"
+  local dependencies=()
 
-yay -Syu --noconfirm
+  info "Installing AUR packages"
 
-aurDep=$(fileToList dependencies/aur.txt)
-echo $aurDep
-yay -S $aurDep --noconfirm
+  load_dependencies "$dependency_file" dependencies
 
-#change shell to zsh
-if command -v zsh >/dev/null 2>&1; then
-  chsh -s "$(command -v zsh)"
-fi
+  if ((${#dependencies[@]} == 0)); then
+    info "No AUR dependencies to install."
+    return
+  fi
 
-# make waybar launch file executable
-if [[ -f "$CONFIG_DIR/waybar/waybar.sh" ]]; then
-  chmod +x "$CONFIG_DIR/waybar/waybar.sh"
-fi
+  yay -S --needed --noconfirm "${dependencies[@]}"
+}
 
-exit 0
+install_packages() {
+  install_pacman_dependencies
+
+  if ! command -v yay >/dev/null 2>&1; then
+    install_yay
+  fi
+
+  update_aur_helper
+  install_aur_dependencies
+}
+
+create_config_symlinks() {
+  local config_dir
+  local config_name
+
+  info "Creating configuration symlinks"
+
+  mkdir -p "$CONFIG_DIR"
+
+  ln -sfnT "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+
+  shopt -s nullglob
+
+  for config_dir in "$SCRIPT_DIR"/config/*/; do
+    config_name="$(basename "$config_dir")"
+
+    ln -sfnT "$config_dir" "$CONFIG_DIR/$config_name"
+    info "Linked $config_name"
+  done
+
+  shopt -u nullglob
+}
+
+make_waybar_script_executable() {
+  local waybar_script="$CONFIG_DIR/waybar/waybar.sh"
+
+  if [[ -f "$waybar_script" ]]; then
+    info "Making Waybar script executable"
+    chmod +x "$waybar_script"
+  fi
+}
+
+change_default_shell() {
+  local zsh_path
+
+  info "Configuring default shell"
+
+  if ! command -v zsh >/dev/null 2>&1; then
+    info "zsh is not installed; skipping shell configuration."
+    return
+  fi
+
+  zsh_path="$(command -v zsh)"
+
+  if [[ "$SHELL" == "$zsh_path" ]]; then
+    info "zsh is already the default shell."
+    return
+  fi
+
+  chsh -s "$zsh_path"
+
+  info "Default shell changed to $zsh_path."
+}
+
+validate_environment() {
+  info "Checking environment"
+
+  if [[ "$EUID" -eq 0 ]]; then
+    error "Do not run this script as root."
+  fi
+
+  require_command sudo
+  require_command pacman
+  require_command git
+
+  sudo -v
+}
+
+main() {
+  info "Starting Arch Linux setup"
+
+  validate_environment
+
+  create_config_symlinks
+
+  enable_multilib
+  configure_reflector
+
+  update_system
+  install_packages
+
+  change_default_shell
+  make_waybar_script_executable
+
+  info "Arch Linux setup completed successfully."
+}
+
+main "$@"
