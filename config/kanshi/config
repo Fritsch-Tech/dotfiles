@@ -5,7 +5,7 @@ profile undocked {
 
 # Laptop docked with the external monitor
 profile docked {
-  output DP-4 enable mode 2560x1440@144.000Hz position 0,0 scale 1
+  output DP-4 enable mode 2560x1440@144Hz position 0,0 scale 1
   output eDP-1 enable mode 2256x1504@60Hz position 2560,437 scale 1.5
   exec swaymsg 'workspace 1 output eDP-1; workspace 2 output DP-4; [workspace="^1$"] move workspace to output eDP-1; [workspace="^2$"] move workspace to output DP-4'
 }

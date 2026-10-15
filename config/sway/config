@@ -45,7 +45,9 @@ bindsym $mod_alt+Space exec "rofi -modes drun,run,filebrowser,ssh -show drun -th
 # clipbord manager
 bindsym $mod+c exec clipcat-menu insert
 bindsym $mod+SHIFT+c exec clipcat-menu delete
-bindsym $mod+period exec ~/.local/bin/dmenuunicode
+bindsym $mod+period exec dmenuunicode
+bindsym $mod+SHIFT+period exec dmenuunicode insert
+
 
 # change focus
 bindsym $mod+h focus left
@@ -269,6 +271,7 @@ exec playerctl pause && swayidle -w \
 exec_always ~/.config/waybar/waybar.sh
 
 exec kanshi
+exec_always kanshictl reload
 
 exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
