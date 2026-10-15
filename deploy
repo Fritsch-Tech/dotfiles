@@ -233,6 +233,7 @@ make_waybar_script_executable() {
 
 change_default_shell() {
   local zsh_path
+  local current_shell
 
   info "Configuring default shell"
 
@@ -241,9 +242,17 @@ change_default_shell() {
     return
   fi
 
-  zsh_path="$(command -v zsh)"
+  # chsh only accepts paths listed in /etc/shells, so pick zsh from there
+  # instead of from PATH (which may resolve to e.g. /usr/sbin/zsh).
+  zsh_path="$(grep -m1 -E '^/usr/bin/zsh$' /etc/shells || grep -m1 -E '^/.*/zsh$' /etc/shells || true)"
 
-  if [[ "$SHELL" == "$zsh_path" ]]; then
+  if [[ -z "$zsh_path" ]]; then
+    error "zsh is installed but not listed in /etc/shells."
+  fi
+
+  current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+
+  if [[ "$(readlink -f "$current_shell")" == "$(readlink -f "$zsh_path")" ]]; then
     info "zsh is already the default shell."
     return
   fi
@@ -289,22 +298,24 @@ has_battery() {
 }
 
 setup_battery_notification() {
+  local unit_dir="$CONFIG_DIR/systemd/user"
+  local unit
+
   info "Setup battery notification"
 
-  local unit="battery-notification.service"
-
   if ! has_battery; then
-    info "No battery detected; skipping $unit."
+    info "No battery detected; skipping battery notification."
     return
   fi
 
-  if ! systemctl cat "$unit" >/dev/null 2>&1; then
-    warn "Battery detected, but $unit is not installed; skipping."
-    return
-  fi
+  mkdir -p "$unit_dir"
 
-  info "Battery detected; enabling $unit"
-  sudo systemctl enable "$unit"
+  for unit in battery-notification.service battery-notification.timer; do
+    link_path "$SCRIPT_DIR/services/$unit" "$unit_dir/$unit"
+  done
+
+  systemctl --user daemon-reload
+  systemctl --user enable --now battery-notification.timer
 }
 
 setup_services() {
