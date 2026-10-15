@@ -1,18 +1,34 @@
 #!/bin/sh
 
-# The famous "get a menu of emojis to copy" script.
+# The famous "get a menu of emojis to copy" script (Sway/Wayland edition).
+#
+# Dependencies: rofi, wl-clipboard (wl-copy), wtype, libnotify (notify-send)
 
-# Get user selection via dmenu from emoji file.
-chosen=$(cut -d ';' -f1 ~/dotfiles/emoji | dmenu | awk '{print $1}')
+# Locate the emoji file relative to this script's real location.
+# The script lives in <dotfiles>/bin and is symlinked into ~/.local/bin,
+# so resolve the symlink first, then go up one level to the repo root.
+# Set EMOJI_FILE in the environment to override.
+script_dir=$(dirname "$(readlink -f "$0")")
+emoji_file=${EMOJI_FILE:-"$script_dir/../emoji"}
+
+if [ ! -f "$emoji_file" ]; then
+  notify-send "Emoji file not found: $emoji_file"
+  exit 1
+fi
+
+# Get user selection via rofi from the emoji file.
+chosen=$(cut -d ';' -f1 "$emoji_file" |
+  rofi -dmenu -i -p "emoji" -theme sidebar |
+  awk '{print $1}')
 
 # Exit if none chosen.
 [ -z "$chosen" ] && exit
 
 # If you run this command with an argument, it will automatically insert the
-# character. Otherwise, show a message that the emoji has been copied.
+# character. Otherwise, copy it and show a notification.
 if [ -n "$1" ]; then
-	xdotool type "$chosen"
+  wtype "$chosen"
 else
-	echo "$chosen" | tr -d '\n' | xclip -selection clipboard
-	notify-send "'$chosen' copied to clipboard." &
+  printf '%s' "$chosen" | wl-copy
+  notify-send "'$chosen' copied to clipboard." &
 fi

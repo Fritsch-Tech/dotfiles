@@ -1,4 +1,3 @@
 ttf-fira-code
 oh-my-zsh-git
-pokemon-colorscripts-git
 tmuxinator

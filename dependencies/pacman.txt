@@ -20,3 +20,7 @@ lazydocker
 clipcat
 reflector
 ly
+bluetui
+wl-clipboard
+wtype
+libnotify

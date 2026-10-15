@@ -45,7 +45,7 @@ bindsym $mod_alt+Space exec "rofi -modes drun,run,filebrowser,ssh -show drun -th
 # clipbord manager
 bindsym $mod+c exec clipcat-menu insert
 bindsym $mod+SHIFT+c exec clipcat-menu delete
-# bindsym $mod+SHIFT+c exec clipcat-menu edit
+bindsym $mod+period exec ~/.local/bin/dmenuunicode
 
 # change focus
 bindsym $mod+h focus left
@@ -135,8 +135,6 @@ bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
-# restart sway inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r reload
 
 # resize window (you can also use the mouse for that)
@@ -277,15 +275,15 @@ exec_always ~/.config/waybar/waybar.sh
 
 # Displays
 output DP-4 {
-  pos 0 0
-  mode 2560x1440@144.000Hz
-  scale 1
+    pos 0 0
+    mode 2560x1440@144.000Hz
+    scale 1
 }
 
 output eDP-1 {
-  pos 2560 437
-  mode 2256x1504@59.999Hz
-  scale 1.5
+   pos 2560 437
+   mode 2256x1504@59.999Hz
+   scale 1.5
 }
 
 workspace 1 output eDP-1

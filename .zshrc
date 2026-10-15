@@ -37,7 +37,7 @@ source $ZSH/oh-my-zsh.sh
 source /home/sakuk/.config/broot/launcher/bash/
 source $HOME/.config/zsh/aliases.conf
 
-export PATH="$PATH:$(yarn global bin)"
+# export PATH="$PATH:$(yarn global bin)"
 export MOZ_ENABLE_WAYLAND=1
 export QT_QPA_PLATFORM="wayland"
 export QT_QPA_PLATFORMTHEME="qt5ct"
@@ -92,8 +92,6 @@ alias wifi-rescan='nmcli r w off && nmcli r w on && nmcli d w r && nmcli d w'
 export GTK_THEME=Adwaita:dark
 
 clear
-pokemon-colorscripts -r 1-3 
-
 
 export PATH=$PATH:/home/sakuk/.spicetify
 

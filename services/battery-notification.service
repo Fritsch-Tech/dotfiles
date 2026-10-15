@@ -1,0 +1,18 @@
+[Unit]
+Description=Battery Notification Service
+
+[Service]
+ExecStart=/home/iskander/.local/bin/battery-notification
+
+[Install]
+WantedBy=battery-notification.timer
+
+[Unit]
+Description=Battery Notification Timer
+
+[Timer]
+OnActiveSec=2min
+OnUnitActiveSec=2min
+
+[Install]
+WantedBy=timers.target

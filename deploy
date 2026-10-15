@@ -6,10 +6,15 @@ trap 'echo "Error on line $LINENO: $BASH_COMMAND" >&2' ERR
 
 readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly CONFIG_DIR="$HOME/.config"
+readonly BIN_DIR="$HOME/.local/bin"
 readonly PACMAN_CONF="/etc/pacman.conf"
 
 info() {
   echo "==> $*"
+}
+
+warn() {
+  echo "WARNING: $*" >&2
 }
 
 error() {
@@ -76,7 +81,10 @@ update_system() {
   sudo pacman -Syu --noconfirm
 }
 
-install_yay() {
+# Runs in a subshell so the EXIT trap is scoped to this function:
+# the temp dir is removed on success and on failure, and the trap
+# never leaks into the rest of the script.
+install_yay() (
   info "Installing yay"
 
   sudo pacman -S --needed --noconfirm git base-devel
@@ -87,15 +95,11 @@ install_yay() {
 
   git clone https://aur.archlinux.org/yay.git "$build_dir/yay"
 
-  (
-    cd "$build_dir/yay"
-    makepkg -si --noconfirm
-  )
-
-  rm -rf "$build_dir"
+  cd "$build_dir/yay"
+  makepkg -si --noconfirm
 
   info "yay installed."
-}
+)
 
 update_aur_helper() {
   info "Updating AUR packages"
@@ -146,52 +150,76 @@ install_packages() {
   install_aur_dependencies
 }
 
+# Symlink $1 to $2, backing up anything already at $2 that isn't that link.
+link_path() {
+  local source="$1"
+  local target="$2"
+  local name
+  local backup
+
+  name="$(basename "$target")"
+
+  if [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$source" ]]; then
+    info "Already linked $name"
+    return
+  fi
+
+  if [[ -e "$target" || -L "$target" ]]; then
+    backup="$target.backup.$(date +%Y%m%d%H%M%S%N)"
+    mv "$target" "$backup"
+    info "Backed up $name to $backup"
+  fi
+
+  ln -s "$source" "$target"
+  info "Linked $name"
+}
+
 create_config_symlinks() {
   local config_dir
-  local config_name
-  local target
-  local backup
 
   info "Creating configuration symlinks"
 
   mkdir -p "$CONFIG_DIR"
 
-  # Handle .zshrc
-  if [[ -L "$HOME/.zshrc" ]] && [[ "$(readlink "$HOME/.zshrc")" == "$SCRIPT_DIR/.zshrc" ]]; then
-    info "Already linked .zshrc"
-  else
-    if [[ -e "$HOME/.zshrc" || -L "$HOME/.zshrc" ]]; then
-      backup="$HOME/.zshrc.backup.$(date +%Y%m%d%H%M%S%N)"
-      mv "$HOME/.zshrc" "$backup"
-      info "Backed up .zshrc to $backup"
-    fi
-
-    ln -s "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
-    info "Linked .zshrc"
-  fi
+  link_path "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 
   shopt -s nullglob
 
   for config_dir in "$SCRIPT_DIR"/config/*/; do
-    config_name="$(basename "$config_dir")"
-    target="$CONFIG_DIR/$config_name"
-
-    if [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$config_dir" ]]; then
-      info "Already linked $config_name"
-      continue
-    fi
-
-    if [[ -e "$target" || -L "$target" ]]; then
-      backup="$target.backup.$(date +%Y%m%d%H%M%S%N)"
-      mv "$target" "$backup"
-      info "Backed up $config_name to $backup"
-    fi
-
-    ln -s "$config_dir" "$target"
-    info "Linked $config_name"
+    link_path "$config_dir" "$CONFIG_DIR/$(basename "$config_dir")"
   done
 
   shopt -u nullglob
+}
+
+create_bin_symlinks() {
+  local script
+
+  info "Linking scripts from bin/ into $BIN_DIR"
+
+  if [[ ! -d "$SCRIPT_DIR/bin" ]]; then
+    info "No bin directory found; skipping."
+    return
+  fi
+
+  mkdir -p "$BIN_DIR"
+
+  shopt -s nullglob
+
+  for script in "$SCRIPT_DIR"/bin/*; do
+    # Only regular files; skip subdirectories
+    [[ -f "$script" ]] || continue
+
+    chmod +x "$script"
+    link_path "$script" "$BIN_DIR/$(basename "$script")"
+  done
+
+  shopt -u nullglob
+
+  if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+    warn "$BIN_DIR is not in your PATH. Add this to your .zshrc:"
+    warn "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+  fi
 }
 
 make_waybar_script_executable() {
@@ -239,12 +267,59 @@ validate_environment() {
   sudo -v
 }
 
+# Returns success if the machine has a system battery (laptop).
+# Peripheral batteries (wireless mice, headsets) also show up as type
+# "Battery" but have scope "Device", so those are ignored.
+has_battery() {
+  local supply
+  local scope
+
+  for supply in /sys/class/power_supply/*; do
+    [[ -r "$supply/type" ]] || continue
+    [[ "$(<"$supply/type")" == "Battery" ]] || continue
+
+    scope=""
+    [[ -r "$supply/scope" ]] && scope="$(<"$supply/scope")"
+    [[ "$scope" == "Device" ]] && continue
+
+    return 0
+  done
+
+  return 1
+}
+
+setup_battery_notification() {
+  info "Setup battery notification"
+
+  local unit="battery-notification.service"
+
+  if ! has_battery; then
+    info "No battery detected; skipping $unit."
+    return
+  fi
+
+  if ! systemctl cat "$unit" >/dev/null 2>&1; then
+    warn "Battery detected, but $unit is not installed; skipping."
+    return
+  fi
+
+  info "Battery detected; enabling $unit"
+  sudo systemctl enable "$unit"
+}
+
+setup_services() {
+  info "Enabling services"
+
+  sudo systemctl enable ly@tty2.service
+}
+
 main() {
   info "Starting Arch Linux setup"
 
   validate_environment
 
   create_config_symlinks
+  create_bin_symlinks
 
   enable_multilib
   configure_reflector
@@ -254,6 +329,8 @@ main() {
 
   change_default_shell
   make_waybar_script_executable
+  setup_services
+  setup_battery_notification
 
   info "Arch Linux setup completed successfully."
 }
